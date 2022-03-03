@@ -48,11 +48,9 @@ def reroute(commandl):
         sys.exit(1)
 
     elif spt == 0:
-
-        args = [commandl[0], commandl[1]]
-
+        args = [commandl[0]]
         os.close(1)  # redirect child's stdout
-        os.open(commandl[3], os.O_CREAT | os.O_WRONLY);
+        os.open(commandl[2], os.O_CREAT | os.O_WRONLY);
         os.set_inheritable(1, True)
 
         runtask(args)
@@ -61,7 +59,25 @@ def reroute(commandl):
         os.wait()
 
 
+def rewrite(commandl):
+    #redirect with files
 
+    spt = os.fork() #make child
+
+    if spt < 0:
+        os.read(2,("fork fail,resetting %d\n" % spt).encode())
+        sys.exit(1)
+
+    elif spt == 0:
+        args = [commandl[0]]
+        os.close(1)  # redirect child's stdout
+        os.open(commandl[2], os.O_CREAT | os.O_WRONLY);
+        os.set_inheritable(1, True)
+
+        runtask(args)
+
+    else: #parent
+        os.wait()
 
 def main():
 
